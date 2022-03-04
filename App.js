@@ -1,7 +1,8 @@
 import React, {useState, useRef} from 'react';
 import { StyleSheet, Text, View, Button, TextInput, FlatList} from 'react-native';
+import { NavigationContainer} from'@react-navigation/native';
+import { createNativeStackNavigator } from'@react-navigation/native-stack';
 
-export default function CalculatorApp() {
 
   const styles = StyleSheet.create({
     container: {
@@ -28,18 +29,23 @@ export default function CalculatorApp() {
       
     }, 
     operators: {
-    width: '20%',
+    width: '40%',
     marginTop: 20,
     flexDirection:'row', 
     justifyContent: 'space-evenly',  
 
     },
   });
+
+  const Stack = createNativeStackNavigator();
+
+  function Home({ navigation }){
   
   const [count, setCount] = useState('');
   const [count2, setCount2] = useState('');
   const [result, setResult] = useState('');
   const [data, setData] = useState([]);
+
 
   const subtraction= () =>{
     let result = Number(count) - Number(count2); 
@@ -60,7 +66,6 @@ export default function CalculatorApp() {
   }
 
 
-  
   return (
     
     <View style={styles.container}>
@@ -77,15 +82,37 @@ export default function CalculatorApp() {
         <Button  onPress={addition} title="+" color="purple" /> 
         <Button onPress={subtraction} title="-" color="purple"/> 
 
+        <Button
+      onPress={()=>navigation.navigate('History', {data})}
+      title="History" color="purple"   />
+
       </View>
-
-      <FlatList
-        data={data}
-        renderItem={({item}) => 
-            <Text>{item.key}</Text>}
-      />
-
     </View>
   );
 }
 
+function History({ route, navigation }){
+  const { data } = route.params;
+  return (
+    <View style={styles.container}>
+
+<FlatList
+data={data}
+renderItem={({item}) => 
+    <Text>{item.key}</Text>}
+/>
+
+</View>
+  )
+}
+
+export default function App() {
+  return(
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="History" component={History} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );			
+}
